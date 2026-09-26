@@ -1,0 +1,65 @@
+It sounds like you want to:
+
+1. Scan a string character‑by‑character.  
+2. When you hit an opening “(”, collect everything until the matching “)”.  
+3. Take that collected text (let’s call it *inner*).  
+4. Find the **second** occurrence of a particular name inside *inner*.  
+5. Once you locate that second occurrence, replace everything after it (or the name itself) with a “?”.
+
+Below is a compact Python example that does exactly that. You can adapt the variable `target_name` to whatever name you’re looking for.
+
+```python
+def replace_after_second_name(s, target_name):
+    # 1‑2: extract the text inside the first pair of parentheses
+    start = s.find('(')
+    end   = s.find(')', start + 1)
+    if start == -1 or end == -1:
+        return s                      # no parentheses found
+
+    inner = s[start + 1:end]          # text inside '(' … ')'
+
+    # 3‑4: find the second occurrence of the target name
+    first_idx  = inner.find(target_name)
+    if first_idx == -1:
+        return s                      # name not found at all
+
+    second_idx = inner.find(target_name, first_idx + len(target_name))
+    if second_idx == -1:
+        return s                      # only one occurrence
+
+    # 5: build the new inner string – keep up to the end of the second name,
+    # then add a question mark
+    keep_up_to = second_idx + len(target_name)
+    new_inner = inner[:keep_up_to] + '?'
+
+    # reconstruct the full string with the modified parentheses part
+    return s[:start + 1] + new_inner + s[end:]
+
+# Example usage
+txt = "Here is a function(foo bar baz foo qux) and more text."
+result = replace_after_second_name(txt, "foo")
+print(result)
+```
+
+**What the example does**
+
+- Input: `"Here is a function(foo bar baz foo qux) and more text."`  
+- Target name: `"foo"`  
+- The function finds the two `"foo"` occurrences inside the parentheses (`foo` … `foo`).  
+- Everything after the second `"foo"` is replaced by `"?"`, giving:
+
+```
+Here is a function(foo bar baz foo?) and more text.
+```
+
+---
+
+### How to adapt it
+
+| Need | Change |
+|------|--------|
+| Different delimiter (e.g., `{}`) | Replace `find('(')` / `find(')')` with the appropriate characters. |
+| Want to replace **the name itself** with `?` instead of everything after it | Change `new_inner = inner[:second_idx] + '?' + inner[second_idx + len(target_name):]`. |
+| Multiple parenthetical groups | Loop over `while '(' in s:` and apply the same logic to each pair. |
+
+If you’re using another language (JavaScript, Java, etc.) let me know and I can translate the same logic for you.

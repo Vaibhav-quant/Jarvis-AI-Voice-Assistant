@@ -1,0 +1,8 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+*.mp3
+*.wav
+.vscode/
+Launch_Jarvis.vbs - Shortcut.lnk
